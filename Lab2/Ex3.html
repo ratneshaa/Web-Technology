@@ -1,0 +1,107 @@
+<html>
+<head>
+    <title>Mini Task Manager</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; display: flex; flex-direction: column; align-items: center; }
+        .input-section { margin: 20px; }
+        
+        .board { display: flex; gap: 20px; width: 90%; max-width: 1000px; }
+        .column { 
+            flex: 1; background: #ebedf0; border-radius: 8px; 
+            padding: 10px; min-height: 400px; border: 2px dashed #ccc;
+        }
+        .column h2 { text-align: center; color: #333; }
+
+        .task-card {
+            background: white; border: 1px solid #ddd; padding: 10px;
+            margin: 10px 0; border-radius: 4px; cursor: grab;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .task-card p { margin: 5px 0; font-size: 0.9em; color: #666; }
+        
+        .completed-task { background-color: #d4edda !important; border-color: #c3e6cb !important; }
+    </style>
+</head>
+<body>
+
+    <h1>Task Manager</h1>
+    <div class="input-section">
+        <input type="text" id="taskInput" placeholder="Enter task name...">
+        <button onclick="addTask()">Add Task</button>
+    </div>
+
+    <div class="board">
+        <div class="column" id="todo" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2>To Do</h2>
+        </div>
+
+        <div class="column" id="inprogress" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2>In Progress</h2>
+        </div>
+
+        <div class="column" id="completed" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2>Completed</h2>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. ADD TASK LOGIC ---
+        function addTask() {
+            const input = document.getElementById("taskInput");
+            const taskName = input.value;
+
+            if (taskName === "") {
+                alert("Please enter a task name!");
+                return;
+            }
+
+            const taskId = "task-" + Date.now(); 
+            const taskCard = document.createElement("div");
+            taskCard.className = "task-card";
+            taskCard.id = taskId;
+            taskCard.draggable = true; 
+            
+            taskCard.ondragstart = drag;
+
+            const date = new Date().toLocaleDateString();
+            taskCard.innerHTML = `<strong>${taskName}</strong><p>Created: ${date}</p>`;
+
+            document.getElementById("todo").appendChild(taskCard);
+            
+            input.value = "";
+        }
+
+        // --- 2. DRAG AND DROP LOGIC ---
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(data);
+            
+            // Ensure we are dropping into a column (not onto another card)
+            let target = ev.target;
+            while (!target.classList.contains('column')) {
+                target = target.parentElement;
+            }
+
+            target.appendChild(draggedElement);
+
+            if (target.id === "completed") {
+                draggedElement.classList.add("completed-task");
+                if (!draggedElement.innerHTML.includes("Success")) {
+                    draggedElement.innerHTML += `<p style="color:green; font-weight:bold;">Task Completed Successfully</p>`;
+                }
+            } else {
+                draggedElement.classList.remove("completed-task");
+            }
+        }
+    </script>
+</body>
+</html>

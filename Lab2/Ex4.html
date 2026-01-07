@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Management System</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        form input { display: block; width: 95%; margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 15px; cursor: pointer; border: none; border-radius: 4px; }
+        .btn-submit { background: #28a745; color: white; }
+        .btn-clear { background: #dc3545; color: white; margin-top: 20px; }
+        .btn-delete { background: #ff4d4d; color: white; padding: 5px 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>User Registration</h2>
+    <form id="regForm">
+        <input type="text" id="name" placeholder="Full Name" required>
+        <input type="email" id="email" placeholder="Email Address" required>
+        <input type="number" id="mobile" placeholder="Mobile (10 digits)" required>
+        <input type="password" id="password" placeholder="Password (Min 6 chars)" required>
+        <button type="submit" class="btn-submit">Register User</button>
+    </form>
+
+    <hr>
+
+    <h2>Registered Users</h2>
+    <table id="userTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="userList"></tbody>
+    </table>
+    
+    <button class="btn-clear" onclick="clearAll()">Clear All Users</button>
+</div>
+
+<script>
+    const regForm = document.getElementById('regForm');
+    const userList = document.getElementById('userList');
+
+    // Load users from LocalStorage on page load
+    document.addEventListener('DOMContentLoaded', displayUsers);
+
+    regForm.addEventListener('submit', (e) => {
+        e.preventDefault(); // Prevent page refresh
+
+        // 1. Get Values
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const mobile = document.getElementById('mobile').value;
+        const password = document.getElementById('password').value;
+
+        // 2. Validations
+        if (mobile.length !== 10) {
+            alert("Mobile number must be exactly 10 digits.");
+            return;
+        }
+        if (password.length < 6) {
+            alert("Password must be at least 6 characters.");
+            return;
+        }
+
+        // 3. Get existing users or empty array
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+
+        // 4. Check for duplicate email
+        if (users.some(user => user.email === email)) {
+            alert("This email is already registered!");
+            return;
+        }
+
+        // 5. Save User Object
+        const newUser = { name, email, mobile, password };
+        users.push(newUser);
+        localStorage.setItem('users', JSON.stringify(users));
+
+        regForm.reset();
+        displayUsers();
+    });
+
+    // Function to display users in table
+    function displayUsers() {
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        userList.innerHTML = '';
+
+        users.forEach((user, index) => {
+            userList.innerHTML += `
+                <tr>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.mobile}</td>
+                    <td><button class="btn-delete" onclick="deleteUser(${index})">Delete</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    // Function to delete one user
+    function deleteUser(index) {
+        let users = JSON.parse(localStorage.getItem('users'));
+        users.splice(index, 1); 
+        localStorage.setItem('users', JSON.stringify(users));
+        displayUsers();
+    }
+
+    // Function to clear all storage
+    function clearAll() {
+        if(confirm("Are you sure you want to delete all users?")) {
+            localStorage.clear();
+            displayUsers();
+        }
+    }
+</script>
+
+</body>
+</html>

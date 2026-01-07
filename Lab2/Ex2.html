@@ -1,0 +1,60 @@
+<html>
+<head>
+    <title>HTML5 Audio and Video</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .container { margin-bottom: 40px; border-bottom: 1px solid #ccc; padding-bottom: 20px; }
+        video { background: #000; width: 480px; }
+    </style>
+</head>
+<body>
+
+    <h1>HTML5 Multimedia Web page</h1>
+
+    <div class="container">
+        <h2>Audio Player</h2>
+        <audio id="myAudio" controls>
+            <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <p>Current Time: <span id="audioTime">0:00</span></p>
+    </div>
+
+    <div class="container">
+        <h2>Video Player</h2>
+        <video id="myVideo" controls>
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <p>Current Time: <span id="videoTime">0:00</span></p>
+    </div>
+
+    <script>
+        // Select the media elements
+const audio = document.getElementById("myAudio");
+const video = document.getElementById("myVideo");
+
+// Select the display spans
+const audioTimeDisplay = document.getElementById("audioTime");
+const videoTimeDisplay = document.getElementById("videoTime");
+
+// Function to format seconds into MM:SS
+function formatTime(seconds) {
+    let mins = Math.floor(seconds / 60);
+    let secs = Math.floor(seconds % 60);
+    if (secs < 10) secs = "0" + secs;
+    return mins + ":" + secs;
+}
+
+// Update Audio Time
+audio.addEventListener("timeupdate", () => {
+    audioTimeDisplay.innerText = formatTime(audio.currentTime);
+});
+
+// Update Video Time
+video.addEventListener("timeupdate", () => {
+    videoTimeDisplay.innerText = formatTime(video.currentTime);
+});
+    </script>
+</body>
+</html>
