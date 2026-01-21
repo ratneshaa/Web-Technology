@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multi-Stage Form Workflow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f3f3;
+            padding: 20px;
+        }
+
+        .container {
+            background: #fff;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        .stage {
+            display: none;
+        }
+
+        .stage.active {
+            display: block;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+
+        .buttons {
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 8px 15px;
+            margin-right: 5px;
+        }
+
+        .progress-container {
+            background: #ddd;
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            width: 0%;
+            background: #4caf50;
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Multi-Stage Form</h2>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <form id="multiForm">
+
+        <div class="stage active" data-stage="0">
+            <h3>Stage 1: Personal Info</h3>
+            <input type="text" id="name" placeholder="Name"><br>
+            <div class="error" id="nameError"></div>
+        </div>
+
+        <div class="stage" data-stage="1">
+            <h3>Stage 2: Contact</h3>
+            <input type="email" id="email" placeholder="Email"><br>
+            <div class="error" id="emailError"></div>
+        </div>
+
+        <div class="stage" data-stage="2">
+            <h3>Stage 3: Account</h3>
+            <input type="password" id="password" placeholder="Password"><br>
+            <div class="error" id="passwordError"></div>
+        </div>
+
+        <div class="stage" data-stage="3">
+            <h3>Stage 4: Confirmation</h3>
+            <label>
+                <input type="checkbox" id="terms"> Accept Terms & Conditions
+            </label>
+            <div class="error" id="termsError"></div>
+        </div>
+
+        <div class="buttons">
+            <button type="button" id="prevBtn">Previous</button>
+            <button type="button" id="nextBtn">Next</button>
+            <button type="submit" id="submitBtn" style="display:none;">Submit</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let currentStage = 0;
+
+    // 6. Temporary storage
+    const formData = {
+        name: "",
+        email: "",
+        password: "",
+        terms: false
+    };
+
+    const stages = document.querySelectorAll(".stage");
+    const progressBar = document.getElementById("progressBar");
+
+    function showStage(index) {
+        stages.forEach(stage => stage.classList.remove("active"));
+        stages[index].classList.add("active");
+
+        document.getElementById("prevBtn").style.display = index === 0 ? "none" : "inline-block";
+        document.getElementById("nextBtn").style.display = index === stages.length - 1 ? "none" : "inline-block";
+        document.getElementById("submitBtn").style.display = index === stages.length - 1 ? "inline-block" : "none";
+
+        updateProgress();
+    }
+
+    // 3. Progress bar
+    function updateProgress() {
+        const progress = ((currentStage + 1) / stages.length) * 100;
+        progressBar.style.width = progress + "%";
+    }
+
+    // 1 & 2. Validation per stage
+    function validateStage(stage) {
+        let valid = true;
+
+        // Clear errors
+        document.querySelectorAll(".error").forEach(e => e.innerText = "");
+
+        if (stage === 0) {
+            const name = document.getElementById("name").value.trim();
+            if (name.length < 3) {
+                document.getElementById("nameError").innerText = "Name must be at least 3 characters.";
+                valid = false;
+            } else {
+                formData.name = name;
+            }
+        }
+
+        if (stage === 1) {
+            const email = document.getElementById("email").value.trim();
+            if (!email.includes("@")) {
+                document.getElementById("emailError").innerText = "Enter a valid email.";
+                valid = false;
+            } else {
+                formData.email = email;
+            }
+        }
+
+        if (stage === 2) {
+            const password = document.getElementById("password").value;
+            if (password.length < 6) {
+                document.getElementById("passwordError").innerText = "Password must be at least 6 characters.";
+                valid = false;
+            } else {
+                formData.password = password;
+            }
+        }
+
+        if (stage === 3) {
+            const terms = document.getElementById("terms").checked;
+            if (!terms) {
+                document.getElementById("termsError").innerText = "You must accept the terms.";
+                valid = false;
+            } else {
+                formData.terms = true;
+            }
+        }
+
+        return valid;
+    }
+
+    // Navigation
+    document.getElementById("nextBtn").addEventListener("click", () => {
+        if (validateStage(currentStage)) {
+            currentStage++;
+            showStage(currentStage);
+        }
+    });
+
+    document.getElementById("prevBtn").addEventListener("click", () => {
+        currentStage--;
+        showStage(currentStage);
+    });
+
+    // 5. Prevent submission if invalid
+    document.getElementById("multiForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (validateStage(currentStage)) {
+            alert("Form submitted successfully!\n\n" + JSON.stringify(formData, null, 2));
+        }
+    });
+
+    showStage(currentStage);
+</script>
+
+</body>
+</html>
