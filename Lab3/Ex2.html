@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Intelligent Shopping Cart</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background-color: rgb(184, 152, 207);
+        }
+
+        button {
+            margin: 5px;
+            padding: 5px 10px;
+            color: #255fb4;
+        }
+
+        input {
+            padding: 5px;
+        }
+
+        .cart-item {
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>🛒 Intelligent Shopping Cart</h2>
+
+<!-- Product buttons -->
+<button onclick="addProduct('Laptop', 'electronics', 1000)">Add Laptop</button>
+<button onclick="addProduct('Book', 'education', 20)">Add Book</button>
+<button onclick="addProduct('T-Shirt', 'clothing', 30)">Add T-Shirt</button>
+
+<br><br>
+
+<!-- Coupon -->
+<label>Coupon Code:</label>
+<input type="text" id="coupon">
+<button onclick="applyCoupon()">Apply</button>
+
+<h3>Cart Items</h3>
+<div id="cart"></div>
+
+<h3>Total: $<span id="total">0.00</span></h3>
+
+<script>
+
+    // 1️⃣ Cart array
+    let cart = [];
+    let couponDiscount = 0;
+
+    // 2️⃣ Add product
+    function addProduct(name, category, price) {
+        let product = cart.find(item => item.name === name);
+
+        if (product) {
+            product.quantity++;
+        } else {
+            cart.push({
+                name: name,
+                category: category,
+                price: price,
+                quantity: 1
+            });
+        }
+
+        updateCart();
+    }
+
+
+    // 3️⃣ Remove product
+    function removeProduct(name) {
+        cart = cart.filter(item => item.name !== name);
+        updateCart();
+    }
+
+    // 4️⃣ Change quantity
+    function changeQuantity(name, qty) {
+        let item = cart.find(i => i.name === name);
+        item.quantity = Number(qty);
+        updateCart();
+    }
+
+
+    // 5️⃣ Coupon validation
+    function applyCoupon() {
+        let code = document.getElementById("coupon").value
+            .trim()
+            .toUpperCase();
+
+        if (code === "SAVE10") {
+            couponDiscount = 0.10;
+        } else {
+            couponDiscount = 0;
+            alert("Invalid coupon code");
+        }
+
+        updateCart();
+    }
+
+
+    // 6️⃣ Calculate total
+    function calculateTotal() {
+        let total = 0;
+        let hour = new Date().getHours(); // time-based discount
+
+        cart.forEach(item => {
+            let itemTotal = item.price * item.quantity;
+
+            // Bulk discount (5 or more items)
+            if (item.quantity >= 5) {
+                itemTotal *= 0.9; // 10% off
+            }
+
+            // Category discount
+            if (item.category === "education") {
+                itemTotal *= 0.95; // 5% off
+            }
+
+            total += itemTotal;
+        });
+
+        // Time-based discount (evening: 6PM–9PM)
+        if (hour >= 18 && hour <= 21) {
+            total *= 0.95; // 5% off
+        }
+
+        // Coupon discount
+        total -= total * couponDiscount;
+
+        return total.toFixed(2);
+    }
+
+    // 7️⃣ Update cart UI
+    function updateCart() {
+        let cartDiv = document.getElementById("cart");
+        cartDiv.innerHTML = "";
+
+        cart.forEach(item => {
+            cartDiv.innerHTML += `
+                <div class="cart-item">
+                    <strong>${item.name}</strong><br>
+                    Category: ${item.category}<br>
+                    Price: $${item.price}<br>
+                    Quantity:
+                    <input type="number" min="1" value="${item.quantity}"
+                        onchange="changeQuantity('${item.name}', this.value)">
+                    <br>
+                    <button onclick="removeProduct('${item.name}')">Remove</button>
+                </div>
+            `;
+        });
+
+        document.getElementById("total").innerText = calculateTotal();
+    }
+</script>
+
+</body>
+</html>
