@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Search</title>
+    <style>
+        body { font-family: Arial; }
+    </style>
+</head>
+<body>
+
+<h2>Product Search</h2>
+
+<input type="text" id="search" placeholder="Search product">
+<div id="results"></div>
+
+<script>
+
+const products = [
+    { name: "Laptop", price: 50000, category: "Electronics" },
+    { name: "Shoes", price: 2000, category: "Fashion" },
+    { name: "Mobile", price: 15000, category: "Electronics" }
+];
+
+const searchInput = document.getElementById("search");
+const resultsDiv = document.getElementById("results");
+
+let timer;
+
+searchInput.addEventListener("input", function() {
+
+    clearTimeout(timer);
+
+    timer = setTimeout(() => {
+
+        const query = searchInput.value.toLowerCase();
+        resultsDiv.innerHTML = "Loading...";
+
+        setTimeout(() => {   // Simulating AJAX
+
+            const filtered = products.filter(product =>
+                product.name.toLowerCase().includes(query)
+            );
+
+            resultsDiv.innerHTML = "";
+
+            if (filtered.length === 0) {
+                resultsDiv.innerHTML = "No results found";
+                return;
+            }
+
+            filtered.forEach(product => {
+                resultsDiv.innerHTML += `
+                    <p>${product.name} - ₹${product.price} - ${product.category}</p>
+                `;
+            });
+
+        }, 500);
+
+    }, 500);  // Debounce delay
+
+});
+
+</script>
+
+</body>
+</html>

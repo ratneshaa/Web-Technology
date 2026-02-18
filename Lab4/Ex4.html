@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        input {
+            padding: 8px;
+            width: 200px;
+        }
+
+        button {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .loading {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Weather Information Dashboard</h2>
+
+<input type="text" id="city" placeholder="Enter city name">
+<button onclick="getWeather()">Search</button>
+
+<div id="result"></div>
+
+<script>
+
+let cache = {};   // cache last searched city
+
+async function getWeather() {
+
+    const city = document.getElementById("city").value.trim();
+    const resultDiv = document.getElementById("result");
+
+    if (city === "") {
+        resultDiv.innerHTML = "<p class='error'>Please enter a city name</p>";
+        return;
+    }
+
+    // Check cache
+    if (cache[city]) {
+        displayWeather(cache[city]);
+        return;
+    }
+
+    resultDiv.innerHTML = "<p class='loading'>Loading...</p>";
+
+    const apiKey = "7e98e7ffe5d18c51b2d66400524ce131";  
+
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+    try {
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("City not found");
+        }
+
+        const data = await response.json();
+
+        cache[city] = data;   // Save to cache
+
+        displayWeather(data);
+
+    } catch (error) {
+        resultDiv.innerHTML = `<p class="error">${error.message}</p>`;
+    }
+}
+
+function displayWeather(data) {
+
+    const resultDiv = document.getElementById("result");
+
+    resultDiv.innerHTML = `
+        <p><strong>City:</strong> ${data.name}</p>
+        <p><strong>Temperature:</strong> ${data.main.temp} °C</p>
+        <p><strong>Humidity:</strong> ${data.main.humidity}%</p>
+        <p><strong>Condition:</strong> ${data.weather[0].description}</p>
+    `;
+}
+
+</script>
+
+</body>
+</html>

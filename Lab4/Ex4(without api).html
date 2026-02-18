@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        input {
+            padding: 8px;
+            width: 200px;
+        }
+
+        button {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .error { color: red; }
+        .loading { color: blue; }
+    </style>
+</head>
+<body>
+
+<h2>Weather Information Dashboard</h2>
+
+<input type="text" id="city" placeholder="Enter city name">
+<button onclick="getWeather()">Search</button>
+
+<div id="result"></div>
+
+<script>
+
+// Simulated weather database (local JSON style)
+const weatherData = {
+    "delhi": { temp: 30, humidity: 60, condition: "Sunny" },
+    "mumbai": { temp: 28, humidity: 75, condition: "Cloudy" },
+    "london": { temp: 15, humidity: 80, condition: "Rainy" },
+    "tokyo": { temp: 22, humidity: 65, condition: "Clear Sky" }
+};
+
+let cache = {};
+
+function getWeather() {
+
+    const cityInput = document.getElementById("city").value.toLowerCase().trim();
+    const resultDiv = document.getElementById("result");
+
+    if (cityInput === "") {
+        resultDiv.innerHTML = "<p class='error'>Please enter a city name</p>";
+        return;
+    }
+
+    // Check cache
+    if (cache[cityInput]) {
+        displayWeather(cityInput, cache[cityInput]);
+        return;
+    }
+
+    resultDiv.innerHTML = "<p class='loading'>Loading...</p>";
+
+    // Simulate AJAX delay
+    setTimeout(() => {
+
+        if (weatherData[cityInput]) {
+
+            cache[cityInput] = weatherData[cityInput]; // Store in cache
+            displayWeather(cityInput, weatherData[cityInput]);
+
+        } else {
+            resultDiv.innerHTML = "<p class='error'>City not found</p>";
+        }
+
+    }, 1000);
+}
+
+function displayWeather(city, data) {
+
+    const resultDiv = document.getElementById("result");
+
+    resultDiv.innerHTML = `
+        <p><strong>City:</strong> ${city.toUpperCase()}</p>
+        <p><strong>Temperature:</strong> ${data.temp} °C</p>
+        <p><strong>Humidity:</strong> ${data.humidity}%</p>
+        <p><strong>Condition:</strong> ${data.condition}</p>
+    `;
+}
+
+</script>
+
+</body>
+</html>

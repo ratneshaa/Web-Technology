@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Username Checker</title>
+    <style>
+        body { font-family: Arial; }
+        #message { font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h2>Username Availability Checker</h2>
+
+<input type="text" id="username" placeholder="Enter username">
+<p id="message"></p>
+<button id="submitBtn">Submit</button>
+
+<script>
+
+const existingUsers = ["ratneshaa", "admin", "john123"];
+
+const usernameInput = document.getElementById("username");
+const message = document.getElementById("message");
+const submitBtn = document.getElementById("submitBtn");
+
+usernameInput.addEventListener("input", function() {
+
+    message.innerHTML = "Checking...";
+    submitBtn.disabled = true;
+
+    // Simulating AJAX delay
+    setTimeout(() => {
+
+        if (existingUsers.includes(usernameInput.value)) {
+            message.innerHTML = "❌ Username already taken";
+            submitBtn.disabled = true;
+        } else {
+            message.innerHTML = "✅ Username available";
+            submitBtn.disabled = false;
+        }
+
+    }, 500);
+
+});
+
+</script>
+
+</body>
+</html>

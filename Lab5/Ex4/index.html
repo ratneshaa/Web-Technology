@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Inventory System</title>
+</head>
+<body>
+
+<h2>Product Inventory System</h2>
+
+<button onclick="loadInventory()">Load Inventory</button>
+
+<br><br>
+
+Search by Category:
+<input type="text" id="searchCategory">
+<button onclick="searchProduct()">Search</button>
+
+<br><br>
+
+<table border="1" id="inventoryTable">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Price</th>
+        <th>Stock</th>
+        <th>Action</th>
+    </tr>
+</table>
+
+<h3>Add / Update Product</h3>
+
+ID: <input type="number" id="id"><br><br>
+Name: <input type="text" id="name"><br><br>
+Category: <input type="text" id="category"><br><br>
+Price: <input type="number" id="price"><br><br>
+Stock: <input type="number" id="stock"><br><br>
+
+<button onclick="addProduct()">Add Product</button>
+
+<h3 id="totalValue"></h3>
+
+<p id="message"></p>
+
+<script src="script.js"></script>
+
+</body>
+</html>
