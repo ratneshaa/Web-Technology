@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Student Notes Manager</title>
+</head>
+
+<body>
+
+<h2>Add Note</h2>
+
+<input id="title" placeholder="Title"><br><br>
+<input id="subject" placeholder="Subject"><br><br>
+<textarea id="description"></textarea><br><br>
+
+<button onclick="addNote()">Add Note</button>
+
+<script>
+
+function addNote(){
+
+let note={
+title:document.getElementById("title").value,
+subject:document.getElementById("subject").value,
+description:document.getElementById("description").value
+};
+
+console.log("AJAX Request Sent:");
+console.log(JSON.stringify(note));
+
+alert("Now insert this JSON into MongoDB Compass");
+
+}
+
+
+
+function addNote(){
+
+let note={
+title:document.getElementById("title").value,
+subject:document.getElementById("subject").value,
+description:document.getElementById("description").value
+};
+
+document.body.innerHTML += "<pre>"+JSON.stringify(note,null,2)+"</pre>";
+
+}
+
+
+</script>
+<script src="script.js"></script>
+</body>
+</html>
